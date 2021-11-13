@@ -43,13 +43,14 @@ background-position: top
 # tidyr, c'est quoi?
 
 
+
 "*tidy datasets are all alike, but every messy dataset is messy in its own way*" 
 
 Hadley Wickham 
 &lt;!-- c'est la promesse de plus de temps consacré à l'analyse --&gt;
 
 ---
-class: inverse, middle, center
+class: inverse, middle
 
 # Prologue 
 
@@ -64,11 +65,14 @@ Les experts ne s'entendent pas quant à la façon dont l'usager doit prononcer l
 &lt;!-- Aussi, « tidyr » ne prend jamais de majuscule --&gt;
 
 ---
-class: inverse, top, center
+class: inverse, top
 
 # Prologue (suite)
 
 ### Les données que nous manipulerons
+
+&lt;!-- Je vous propose de découvrir le package en utilisant ses fonctions pour nettoyer une vraie base de données. --&gt;
+
 
 Les données que nous manipulerons proviennent du package **palmerpenguins** :
 
@@ -86,15 +90,13 @@ df &lt;- palmerpenguins::penguins
 ```
 
 --
-class: inverse, top
-
 
 Puisque cette présentation en est une sur Tidyr, nous utiliserons les données brutes histoire de les « nettoyer ». 
 
-
 --
-class: inverse, top
+
 Plus de détails sur cette base de données [ici](https://allisonhorst.github.io/palmerpenguins/) 
+
 
 ---
 class: inverse, middle, center
@@ -113,7 +115,7 @@ class: inverse
 ---
 class: inverse, top
 
-# 1 À quoi sert Tidyr ?
+# 1. À quoi sert Tidyr ?
 
 &lt;!-- Expliquer image (variables, observations, values) --&gt;
 
@@ -228,14 +230,15 @@ background-position: 0% 0%
 
 #  &lt;span style="color:red"&gt;2. Utilisation &lt;/span&gt;
 
-\
-&amp;nbsp;
-\
+
 &amp;nbsp;
 
-## « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. » 
+&amp;nbsp;
 
- 
+### « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »
+
+
+
 ---
 class: top,
 
@@ -250,16 +253,47 @@ DT::datatable(
 )
 ```
 
-<div id="htmlwidget-44e9f04a8417cf8c51b4" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-44e9f04a8417cf8c51b4">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],["Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)"],["Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],["Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage"],["N1A1","N1A2","N2A1","N2A2","N3A1","N3A2","N4A1","N4A2","N5A1","N5A2","N6A1","N6A2","N7A1","N7A2","N8A1","N8A2","N9A1","N9A2","N10A1","N10A2"],["Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes"],["2007-11-11","2007-11-11","2007-11-16","2007-11-16","2007-11-16","2007-11-16","2007-11-15","2007-11-15","2007-11-09","2007-11-09","2007-11-09","2007-11-09","2007-11-15","2007-11-15","2007-11-16","2007-11-16","2007-11-12","2007-11-12","2007-11-16","2007-11-16"],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["MALE","FEMALE","FEMALE",null,"FEMALE","MALE","FEMALE","MALE",null,null,null,null,"FEMALE","MALE","MALE","FEMALE","FEMALE","MALE","FEMALE","MALE"],[null,8.94956,8.36821,null,8.76651,8.66496,9.18718,9.4606,null,9.13362,8.63243,null,null,null,8.55583,null,9.18528,8.67538,8.47827,9.11616],[null,-24.69454,-25.33302,null,-25.32426,-25.29805,-25.21799,-24.89958,null,-25.09368,-25.21315,null,null,null,-25.22588,null,-25.06691,-25.13993,-25.23319,-24.77227],["Not enough blood for isotopes.",null,null,"Adult not sampled.",null,null,"Nest never observed with full clutch.","Nest never observed with full clutch.","No blood sample obtained.","No blood sample obtained for sexing.","No blood sample obtained for sexing.","No blood sample obtained.","Not enough blood for isotopes.","Not enough blood for isotopes.",null,"Not enough blood for isotopes.",null,null,null,null]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>studyName<\/th>\n      <th>Sample Number<\/th>\n      <th>Species<\/th>\n      <th>Region<\/th>\n      <th>Island<\/th>\n      <th>Stage<\/th>\n      <th>Individual ID<\/th>\n      <th>Clutch Completion<\/th>\n      <th>Date Egg<\/th>\n      <th>Culmen Length (mm)<\/th>\n      <th>Culmen Depth (mm)<\/th>\n      <th>Flipper Length (mm)<\/th>\n      <th>Body Mass (g)<\/th>\n      <th>Sex<\/th>\n      <th>Delta 15 N (o/oo)<\/th>\n      <th>Delta 13 C (o/oo)<\/th>\n      <th>Comments<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,10,11,12,13,15,16]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-2348569152266d47182c" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2348569152266d47182c">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],["Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)"],["Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],["Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage"],["N1A1","N1A2","N2A1","N2A2","N3A1","N3A2","N4A1","N4A2","N5A1","N5A2","N6A1","N6A2","N7A1","N7A2","N8A1","N8A2","N9A1","N9A2","N10A1","N10A2"],["Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes"],["2007-11-11","2007-11-11","2007-11-16","2007-11-16","2007-11-16","2007-11-16","2007-11-15","2007-11-15","2007-11-09","2007-11-09","2007-11-09","2007-11-09","2007-11-15","2007-11-15","2007-11-16","2007-11-16","2007-11-12","2007-11-12","2007-11-16","2007-11-16"],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["MALE","FEMALE","FEMALE",null,"FEMALE","MALE","FEMALE","MALE",null,null,null,null,"FEMALE","MALE","MALE","FEMALE","FEMALE","MALE","FEMALE","MALE"],[null,8.94956,8.36821,null,8.76651,8.66496,9.18718,9.4606,null,9.13362,8.63243,null,null,null,8.55583,null,9.18528,8.67538,8.47827,9.11616],[null,-24.69454,-25.33302,null,-25.32426,-25.29805,-25.21799,-24.89958,null,-25.09368,-25.21315,null,null,null,-25.22588,null,-25.06691,-25.13993,-25.23319,-24.77227],["Not enough blood for isotopes.",null,null,"Adult not sampled.",null,null,"Nest never observed with full clutch.","Nest never observed with full clutch.","No blood sample obtained.","No blood sample obtained for sexing.","No blood sample obtained for sexing.","No blood sample obtained.","Not enough blood for isotopes.","Not enough blood for isotopes.",null,"Not enough blood for isotopes.",null,null,null,null]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>studyName<\/th>\n      <th>Sample Number<\/th>\n      <th>Species<\/th>\n      <th>Region<\/th>\n      <th>Island<\/th>\n      <th>Stage<\/th>\n      <th>Individual ID<\/th>\n      <th>Clutch Completion<\/th>\n      <th>Date Egg<\/th>\n      <th>Culmen Length (mm)<\/th>\n      <th>Culmen Depth (mm)<\/th>\n      <th>Flipper Length (mm)<\/th>\n      <th>Body Mass (g)<\/th>\n      <th>Sex<\/th>\n      <th>Delta 15 N (o/oo)<\/th>\n      <th>Delta 13 C (o/oo)<\/th>\n      <th>Comments<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,10,11,12,13,15,16]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+&lt;!-- Beaucoup de bases de données ne sont pas explicitement concues pour l'analyse, d'où la nécéssité de les « tidy » --&gt;
 
 ---
 class: top
 
-## 2.1 *Spreading* et *Gathering*
+# 2.1 *Spreading* et *Gathering*
 
-« the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. » 
+## Première étape
 
+&lt;!-- « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »  --&gt;
+
+Quelles sont les observations et les variables?
+
+
+```r
+colnames(df_raw)
+```
+
+```
+##  [1] "studyName"           "Sample Number"       "Species"            
+##  [4] "Region"              "Island"              "Stage"              
+##  [7] "Individual ID"       "Clutch Completion"   "Date Egg"           
+## [10] "Culmen Length (mm)"  "Culmen Depth (mm)"   "Flipper Length (mm)"
+## [13] "Body Mass (g)"       "Sex"                 "Delta 15 N (o/oo)"  
+## [16] "Delta 13 C (o/oo)"   "Comments"
+```
+
+```r
+head(rownames(df_raw))
+```
+
+```
+## [1] "1" "2" "3" "4" "5" "6"
+```
+
+--
+
+Il nous faut résoudre les deux pro
 
 
 

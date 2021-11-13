@@ -26,13 +26,14 @@ background-position: top
 # tidyr, c'est quoi?
 
 
+
 "*tidy datasets are all alike, but every messy dataset is messy in its own way*" 
 
 Hadley Wickham 
 <!-- c'est la promesse de plus de temps consacré à l'analyse -->
 
 ---
-class: inverse, middle, center
+class: inverse, middle
 
 # Prologue 
 
@@ -47,11 +48,14 @@ Les experts ne s'entendent pas quant à la façon dont l'usager doit prononcer l
 <!-- Aussi, « tidyr » ne prend jamais de majuscule -->
 
 ---
-class: inverse, top, center
+class: inverse, top
 
 # Prologue (suite)
 
 ### Les données que nous manipulerons
+
+<!-- Je vous propose de découvrir le package en utilisant ses fonctions pour nettoyer une vraie base de données. -->
+
 
 Les données que nous manipulerons proviennent du package **palmerpenguins** :
 
@@ -67,15 +71,13 @@ df <- palmerpenguins::penguins
 ```
 
 --
-class: inverse, top
 
-
-Puisque cette présentation en est une sur Tidyr, nous utiliserons les données brutes histoire de les « nettoyer ». 
-
+Puisque cette présentation porte sur tidyr, nous utiliserons les données brutes histoire de les « nettoyer ». 
 
 --
-class: inverse, top
+
 Plus de détails sur cette base de données [ici](https://allisonhorst.github.io/palmerpenguins/) 
+
 
 ---
 class: inverse, middle, center
@@ -94,13 +96,19 @@ class: inverse
 ---
 class: inverse, top
 
-# 1 À quoi sert Tidyr ?
+# 1. À quoi sert Tidyr ?
 
 <!-- Expliquer image (variables, observations, values) -->
 
+Le but de tidyr est de vous aider à créer des données « *tidy* ». 
+
+Le *Tidy data* décrit une méthode standard de classement des données qui est utilisée (dans la mesure du possible) dans l'ensemble de tidyverse. 
+
+
+Si vous vous assurez que vos données correspondent au standard « tidy data », vous passerez moins de temps à vous battre avec les outils et plus de temps à travailler sur votre analyse. 
+
 ---
 class: inverse, top
-
 
 ## 1.1 Fondements théoriques
 
@@ -204,35 +212,86 @@ Si vous êtes un « *contrarian* », vous pouvez aussi directement installer **t
 background-image: url(https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png)
 background-position: 0% 0%
 
-#  <span style="color:red">2. Utilisation </span>
+#  <span style="color:red">2. Fonctions principales </span>
 
-\
-&nbsp;
-\
+
 &nbsp;
 
-## « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. » 
+&nbsp;
 
- 
+### « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »
+
+
+
 ---
 class: top,
 
 Voici notre banque de donnée avant le "tidying" :
 
+
 --
-```{r eval=require('DT'), tidy=FALSE}
+```{r eval=require('DT')}
 DT::datatable(
   head(df_raw, 20),
   fillContainer = TRUE, options = list(pageLength = 8)
 )
 ```
 
+<!-- Beaucoup de bases de données ne sont pas explicitement concues pour l'analyse, d'où la nécéssité de les « tidy » -->
+
+
+
+---
+
+# Les 5 fonctions principales de tidyr
+
+- “Pivotting” which converts between long and wide forms. tidyr 1.0.0 introduces pivot_longer() and pivot_wider(), replacing the older spread() and gather() functions. See vignette("pivot") for more details.
+
+
+- “Rectangling”, which turns deeply nested lists (as from JSON) into tidy tibbles. See unnest_longer(), unnest_wider(), hoist(), and vignette("rectangle") for more details.
+
+- Nesting converts grouped data to a form where each group becomes a single row containing a nested data frame, and unnesting does the opposite. See nest(), unnest(), and vignette("nest") for more details.
+
+- Splitting and combining character columns. Use separate() and extract() to pull a single character column into multiple columns; use unite() to combine multiple columns into a single character column.
+
+- Make implicit missing values explicit with complete(); make explicit missing values implicit with drop_na(); replace missing values with next/previous value with fill(), or a known value with replace_na().
+
+
 ---
 class: top
 
-## 2.1 *Spreading* et *Gathering*
 
-« the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. » 
+# 2.1 *Spreading* et *Gathering*
+
+## Première étape
+
+<!-- « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »  -->
+
+Quelles sont les observations et les variables?
+
+```{r}
+colnames(df_raw)
+head(rownames(df_raw))
+```
+
+---
+class: top
+
+## Deuxième étape
+
+Il nous faut résoudre les deux problèmes les plus communs : 
+
+
+--
+
+- Une variable se trouve-t-elle sur plusieurs colonnes?
+
+--
+
+- Une observation se trouve-t-elle sur plusieurs rangées? 
+
+De notre côté, dans les deux cas la réponse est « non ».
+--
 
 
 
@@ -241,13 +300,260 @@ class: top
 ---
 class: center, bottom, inverse
 
+## La fonction *gather()*
 
-  
-  
+Development on gather() is complete, and for new code we recommend switching to pivot_longer(), which is easier to use, more featureful, and still under active development. df %>% gather("key", "value", x, y, z) is equivalent to df %>% pivot_longer(c(x, y, z), names_to = "key", values_to = "value")
+
+```{r}
+gather(
+  data,
+  key = "key",
+  value = "value",
+  ...,
+  na.rm = FALSE,
+  convert = FALSE,
+  factor_key = FALSE
+)
+```
+
+
 ---
 class: inverse, middle, center
 
-# Using xaringan
+# La fonction *pivot_wider()*
+
+pivot_wider() "widens" data, increasing the number of columns and decreasing the number of rows. The inverse transformation is pivot_longer().
+
+
+```{r}
+pivot_wider(
+  data,
+  id_cols = NULL,
+  names_from = name,
+  names_prefix = "",
+  names_sep = "_",
+  names_glue = NULL,
+  names_sort = FALSE,
+  names_repair = "check_unique",
+  values_from = value,
+  values_fill = NULL,
+  values_fn = NULL,
+  ...
+)
+```
+
+
 
 ---
+class: inverse, middle, center
+
+# La fonction *spread()*
+
+Development on spread() is complete, and for new code we recommend switching to pivot_wider(), which is easier to use, more featureful, and still under active development. df %>% spread(key, value) is equivalent to df %>% pivot_wider(names_from = key, values_from = value)
+
+```{r}
+spread(data, key, value, fill = NA, convert = FALSE, drop = TRUE, sep = NULL)
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *separate()*
+
+Given either a regular expression or a vector of character positions, separate() turns a single character column into multiple columns.
+
+
+```{r}
+separate(
+  data,
+  col,
+  into,
+  sep = "[^[:alnum:]]+",
+  remove = TRUE,
+  convert = FALSE,
+  extra = "warn",
+  fill = "warn",
+  ...
+)
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *separate_rows()*
+
+If a variable contains observations with multiple delimited values, this separates the values and places each one in its own row.
+
+
+---
+class: inverse, middle, center
+
+# La fonction *unite()*
+
+Convenience function to paste together multiple columns into one.
+
+```{r}
+unite(data, col, ..., sep = "_", remove = TRUE, na.rm = FALSE)
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *complete()*
+
+Turns implicit missing values into explicit missing values. This is a wrapper around expand(), dplyr::left_join() and replace_na() that's useful for completing missing combinations of data.
+
+```{r}
+complete(data, ..., fill = list())
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *full_seq()*
+
+This is useful if you want to fill in missing values that should have been observed but weren't. For example, full_seq(c(1, 2, 4, 6), 1) will return 1:6.
+
+
+```{r}
+full_seq(x, period, tol = 1e-06)
+```
+
+---
+class: inverse, middle, center
+
+# La fonction *extract()* et *extract_numeric()*
+
+Given a regular expression with capturing groups, extract() turns each group into a new column. If the groups don't match, or the input is NA, the output will be NA.
+
+```{r}
+extract(
+  data,
+  col,
+  into,
+  regex = "([[:alnum:]]+)",
+  remove = TRUE,
+  convert = FALSE,
+  ...
+)
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *drop_na()*
+
+Drop rows containing missing values
+
+```{r}
+drop_na(data, ...)
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *chop()*
+
+Chopping and unchopping preserve the width of a data frame, changing its length. chop() makes df shorter by converting rows within each group into list-columns. unchop() makes df longer by expanding list-columns so that each element of the list-column gets its own row in the output. chop() and unchop() are building blocks for more complicated functions (like unnest(), unnest_longer(), and unnest_wider()) and are generally more suitable for programming than interactive data analysis.
+
+```{r}
+chop(data, cols)
+unchop(data, cols, keep_empty = FALSE, ptype = NULL)
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *expand()*
+
+expand() generates all combination of variables found in a dataset. It is paired with nesting() and crossing() helpers. crossing() is a wrapper around expand_grid() that de-duplicates and sorts its inputs; nesting() is a helper that only finds combinations already present in the data.
+
+expand() is often useful in conjunction with joins:
+
+use it with right_join() to convert implicit missing values to explicit missing values (e.g., fill in gaps in your data frame).
+
+use it with anti_join() to figure out which combinations are missing (e.g., identify gaps in your data frame).
+
+
+```{r}
+expand(data, ..., .name_repair = "check_unique")
+crossing(..., .name_repair = "check_unique")
+nesting(..., .name_repair = "check_unique")
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *uncount()*
+
+unite(data, col, ..., sep = "_", remove = TRUE, na.rm = FALSE)
+
+```{r}
+uncount(data, weights, .remove = TRUE, .id = NULL)
+```
+
+
+---
+class: inverse, middle, center
+
+#... et de nombreuses autres fonctions :
+
+- tidyr_tidy_select()
+
+- pack()
+
+- unpack()
+
+- hoist()
+
+- expand_grid()
+
+
+
+citation("palmerpenguins")
+
+---
+class: inverse, middle, center
+
+# La fonction *replace_na()*
+
+Remplace les NA par les valeurs spécifiées
+
+```{r}
+replace_na(data, replace, ...)
+```
+
+
+citation("palmerpenguins")
+
+---
+class: inverse, middle, center
+
+# La fonction *fill()*
+
+citation("palmerpenguins")
+
+Fills missing values in selected columns using the next or previous entry. This is useful in the common output format where values are not repeated, and are only recorded when they change.
+
+
+
+
+Horst AM, Hill AP, Gorman KB (2020). palmerpenguins: Palmer
+Archipelago (Antarctica) penguin data. R package version 0.1.0.
+https://allisonhorst.github.io/palmerpenguins/. doi:
+10.5281/zenodo.3960218.
+
+
 
