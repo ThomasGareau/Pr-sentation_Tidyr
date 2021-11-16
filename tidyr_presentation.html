@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>tidyr : la lada des packages</title>
+    <title>Je pense, donc je « Tidy »</title>
     <meta charset="utf-8" />
     <meta name="author" content="Thomas Gareau Paquette" />
-    <meta name="date" content="2021-11-13" />
+    <meta name="date" content="2021-11-16" />
     <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
@@ -22,11 +22,11 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# tidyr : la lada des packages
-## Présentation orale - FAS 1002
+# Je pense, donc je « Tidy »
+## Présentation orale sur tidyr - FAS 1002
 ### Thomas Gareau Paquette
 ### Université de Montréal
-### 2021-11-13
+### 2021-11-16
 
 ---
 
@@ -76,26 +76,30 @@ class: inverse, top
 
 Les données que nous manipulerons proviennent du package **palmerpenguins** :
 
-
-```r
-#install.packages("palmerpenguins")
-df_raw &lt;- palmerpenguins::penguins_raw
-```
-
+&amp;nbsp;
+&amp;nbsp;
 
 
 
 ```r
 df &lt;- palmerpenguins::penguins
 ```
+&amp;nbsp;
+&amp;nbsp;
+
 
 --
 
-Puisque cette présentation en est une sur Tidyr, nous utiliserons les données brutes histoire de les « nettoyer ». 
+Puisque cette présentation porte sur tidyr, nous utiliserons les données brutes histoire de les « nettoyer ». 
+&amp;nbsp;
+&amp;nbsp;
 
 --
 
 Plus de détails sur cette base de données [ici](https://allisonhorst.github.io/palmerpenguins/) 
+
+&amp;nbsp;
+&amp;nbsp;
 
 
 ---
@@ -117,31 +121,68 @@ class: inverse, top
 
 # 1. À quoi sert Tidyr ?
 
-&lt;!-- Expliquer image (variables, observations, values) --&gt;
+&lt;!-- Avant de plonger dans tidyr, il faut comprendre ce que sont des données formatées « tidy ».  --&gt;
+
+Le but de tidyr est de vous aider à créer des données « *tidy* ». 
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+--
+
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+
+Le *Tidy data* décrit une méthode standard de classement des données qui est utilisée (dans la mesure du possible) dans l'ensemble de tidyverse. 
+
+
+
+--
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+
+Si vous vous assurez que vos données correspondent au standard « tidy data », vous passerez moins de temps à vous battre avec les outils et plus de temps à travailler sur votre analyse. 
 
 ---
 class: inverse, top
 
-
 ## 1.1 Fondements théoriques
+
+&amp;nbsp;
+&amp;nbsp;
 
 
 Le « *data tidying* » est une façon cohérente d'organiser vos données dans R.
 
+&amp;nbsp;
+&amp;nbsp;
+
 
 Trois règles inter-reliées permettent d'affirmer qu'un jeu de données est "*Tidy*" :
 
+&amp;nbsp;
+
 --
+
+&amp;nbsp;
 
 
 - Chaque variable a sa propre colonne;
 
 --
 
+&amp;nbsp;
+
 
 - Chaque observation a sa propre rangée;
 
 --
+
+&amp;nbsp;
 
 
 - Chaque valeur a sa propre cellule.
@@ -153,8 +194,7 @@ class: inverse, top
 ## 1.1 Fondements théoriques
 
 
-Ces règles étant **inter-reliées**, ces règles pourraient être résumées en deux commandements : 
-
+Ces règles étant **inter-reliées**, elles peuvent être résumées en deux commandements : 
 
 
 --
@@ -164,6 +204,7 @@ Ces règles étant **inter-reliées**, ces règles pourraient être résumées e
 
 
 --
+
 - Chaque variable doit être avoir sa colonne. 
 
 
@@ -171,9 +212,19 @@ Ces règles étant **inter-reliées**, ces règles pourraient être résumées e
 
 &lt;!-- L'adage veut que 80% de l'analyse des données soit consacrée au nettoyage et à la préparation des données. --&gt;
 
+&lt;!-- Une autre façon de voir le data tidying est la suivante. --&gt;
+
 ![unchanged image](https://garrettgman.github.io/images/tidy-1.png)
 
 .footnote[[*] source : Wickham et Grolemund 2016, 149]
+
+---
+class: top
+
+
+![OMD, that smile...](https://education.rstudio.com/blog/2020/07/teaching-the-tidyverse-in-2020-part-3-data-wrangling-and-tidying/img/tidyr-longer-wider.gif)
+
+
 
 ---
 class: inverse, top
@@ -210,107 +261,375 @@ Un seul prérequis :
 library(tidyverse)
 ```
 
+&lt;!-- Inclut dyplr, ggplot, et de nombreux autres packages formidables --&gt;
+
+
+
+
+Si vous êtes un « *contrarian* », vous pouvez aussi directement installer **tidyr**. 
+
 
 ```r
-library(kableExtra)
+library(tidyr)
 ```
 
-
-Si vous êtes un « *contrarian* », vous pouvez aussi directement installer **tidyr** : 
-
-
-```r
-#library(tidyr)
-```
-
-
----
-background-image: url(https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png)
-background-position: 0% 0%
-
-#  &lt;span style="color:red"&gt;2. Utilisation &lt;/span&gt;
-
-
-&amp;nbsp;
-
-&amp;nbsp;
-
-### « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »
-
-
-
----
-class: top,
-
-Voici notre banque de donnée avant le "tidying" :
-
---
-
-```r
-DT::datatable(
-  head(df_raw, 20),
-  fillContainer = TRUE, options = list(pageLength = 8)
-)
-```
-
-<div id="htmlwidget-2348569152266d47182c" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2348569152266d47182c">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],["Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)"],["Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],["Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage"],["N1A1","N1A2","N2A1","N2A2","N3A1","N3A2","N4A1","N4A2","N5A1","N5A2","N6A1","N6A2","N7A1","N7A2","N8A1","N8A2","N9A1","N9A2","N10A1","N10A2"],["Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes"],["2007-11-11","2007-11-11","2007-11-16","2007-11-16","2007-11-16","2007-11-16","2007-11-15","2007-11-15","2007-11-09","2007-11-09","2007-11-09","2007-11-09","2007-11-15","2007-11-15","2007-11-16","2007-11-16","2007-11-12","2007-11-12","2007-11-16","2007-11-16"],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["MALE","FEMALE","FEMALE",null,"FEMALE","MALE","FEMALE","MALE",null,null,null,null,"FEMALE","MALE","MALE","FEMALE","FEMALE","MALE","FEMALE","MALE"],[null,8.94956,8.36821,null,8.76651,8.66496,9.18718,9.4606,null,9.13362,8.63243,null,null,null,8.55583,null,9.18528,8.67538,8.47827,9.11616],[null,-24.69454,-25.33302,null,-25.32426,-25.29805,-25.21799,-24.89958,null,-25.09368,-25.21315,null,null,null,-25.22588,null,-25.06691,-25.13993,-25.23319,-24.77227],["Not enough blood for isotopes.",null,null,"Adult not sampled.",null,null,"Nest never observed with full clutch.","Nest never observed with full clutch.","No blood sample obtained.","No blood sample obtained for sexing.","No blood sample obtained for sexing.","No blood sample obtained.","Not enough blood for isotopes.","Not enough blood for isotopes.",null,"Not enough blood for isotopes.",null,null,null,null]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>studyName<\/th>\n      <th>Sample Number<\/th>\n      <th>Species<\/th>\n      <th>Region<\/th>\n      <th>Island<\/th>\n      <th>Stage<\/th>\n      <th>Individual ID<\/th>\n      <th>Clutch Completion<\/th>\n      <th>Date Egg<\/th>\n      <th>Culmen Length (mm)<\/th>\n      <th>Culmen Depth (mm)<\/th>\n      <th>Flipper Length (mm)<\/th>\n      <th>Body Mass (g)<\/th>\n      <th>Sex<\/th>\n      <th>Delta 15 N (o/oo)<\/th>\n      <th>Delta 13 C (o/oo)<\/th>\n      <th>Comments<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,10,11,12,13,15,16]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-
-&lt;!-- Beaucoup de bases de données ne sont pas explicitement concues pour l'analyse, d'où la nécéssité de les « tidy » --&gt;
 
 ---
 class: top
 
-# 2.1 *Spreading* et *Gathering*
+background-image: url(https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png)
+background-position: 0% 0%
 
-## Première étape
+#  &lt;span style="color:red"&gt;2. Fonctions principales &lt;/span&gt;
 
-&lt;!-- « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »  --&gt;
 
-Quelles sont les observations et les variables?
+---
+class: top
+
+# 2. Les fonctions essentielles
+
+### « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. » - Wickham et Grolemund
+
+
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+
+La manipulation suivante rend la banque de données sensible à pivot_wider(), une manipulation qui aurait autrement été impossible : 
+
+&amp;nbsp;
+&amp;nbsp;
+
 
 
 ```r
-colnames(df_raw)
+# ajout d'une variable « studygroupid »
+penguins_id &lt;- df %&gt;%
+  mutate(studygroupid = row_number(), .before = contains("_"))
 ```
 
-```
-##  [1] "studyName"           "Sample Number"       "Species"            
-##  [4] "Region"              "Island"              "Stage"              
-##  [7] "Individual ID"       "Clutch Completion"   "Date Egg"           
-## [10] "Culmen Length (mm)"  "Culmen Depth (mm)"   "Flipper Length (mm)"
-## [13] "Body Mass (g)"       "Sex"                 "Delta 15 N (o/oo)"  
-## [16] "Delta 13 C (o/oo)"   "Comments"
-```
+&lt;!-- L'utilisation de row_number() avec mutate() créera une colonne de numéros consécutifs. La fonction row_number() est utile pour créer un numéro d'identification (une variable ID). Elle est également utile pour étiqueter chaque observation par une variable de regroupement. --&gt;
+
+---
+class: top
+
+
+# 2. Les fonctions essentielles 
+
+Notre base de données initiale ressemble donc à ceci : 
+
+<div id="htmlwidget-c2cf8f0843e3582bb520" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c2cf8f0843e3582bb520">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["male","female","female",null,"female","male","female","male",null,null,null,null,"female","male","male","female","female","male","female","male"],[2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007]],"container":"<table class=\"cell-border stripe fill-container\">\n  <thead>\n    <tr>\n      <th>species<\/th>\n      <th>island<\/th>\n      <th>studygroupid<\/th>\n      <th>bill_length_mm<\/th>\n      <th>bill_depth_mm<\/th>\n      <th>flipper_length_mm<\/th>\n      <th>body_mass_g<\/th>\n      <th>sex<\/th>\n      <th>year<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,8]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+
+
+
+
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+---
+
+# 2.1 Les 4 familles de fonctions dans tidyr selon l'action entreprise
+
+
+&lt;!-- Loin de moi l'idée de remplacer une cheat sheet. On va donc regarder les fonctions qui sont le plus utilisées avec les arguments qui vont seront le plus utiles.  --&gt;
+
+
+- Le “Pivotting”
+pivot_longer() / pivot_wider()
+
+&lt;!-- Ce sont des fonctions qui permettent la transformation de la forme d'un data frame, de long à large ou de large à long  --&gt;
+
+--
+
+
+- Le “Rectangling” et le "Nesting" 
+Ce sont des familles de fonction qui vous permettent de reformater des data frames « imbriqués » (nested)
+
+&lt;!-- i.e. une (ou plusieurs) colonne(s) est une liste de data frames --&gt;
+
+&lt;!-- Nesting : convertit les données groupées en une forme où chaque groupe devient une seule rangée contenant un data frame imbriqué.--&gt;
+
+--
+
+- Les fonctions de « fractionnement et de combinaison de caractères ». 
+separate(), extract(), unite, etc. 
+
+
+&lt;!-- et celles qui y sont associées sont utiles pour transformer une colonne à caractère unique en plusieurs colonnes. La fonction unite() vous servira pour combiner plusieurs colonnes en une seule colonne de caractères. --&gt;
+
+--
+
+- Les fonctions touchant aux valeurs manquantes.
+complete(), drop_na(), fill(), replace_na, etc.
+
+&lt;!-- valeurs manquantes implicites explicites avec complete(); rendre les valeurs manquantes explicites implicites avec drop_na(); remplacer les valeurs manquantes par la valeur suivante/précédente avec fill(), ou une valeur connue avec replace_na(). --&gt;
+
+&lt;!-- - Explicite, c'est-à-dire marqué par NA. --&gt;
+&lt;!-- - Implicite, c'est-à-dire simplement non présente dans les données. (2015, 2016, 2018) --&gt;
+
+
+---
+class: top
+
+
+### pivot_longer()
+
+
+Ces données sont « tidy » dans la mesure où elles répondent aux conditions vues précédemment. On peut toutefois expérimenter avec celles-ci quand même : 
+
+&lt;!-- Admettons qu'on est pas satifaits par la façon dont les différentes mesures sont présentées. Nous devons donc faire passer ce tableau de "large" (plus de colonnes) à "long" (moins de colonnes, plus de lignes). On va utiliser la fonction pivot_longer() dans cette situation.  --&gt;
+
+&lt;!-- La synthaxe est la suivante :  --&gt;
+
+
+
 
 ```r
-head(rownames(df_raw))
-```
-
-```
-## [1] "1" "2" "3" "4" "5" "6"
+penguins_long &lt;- penguins_id %&gt;% 
+  pivot_longer(contains("_"), # sélectionne les données qui contiennent des mesures
+               names_to = c("part", "measure", "unit"), # faire de celles-ci 3 colonnes distinctes
+               values_to = "valeur",
+               names_sep = "_")
 ```
 
 --
 
-Il nous faut résoudre les deux pro
+4 arguments-clé :
 
+- cols
+
+--
+
+- names_to
+
+--
+
+- values_to
+
+--
+
+- names_sep
+
+&lt;!-- cols : les colonnes concernées (avec un _) :  "bill_length_mm"    "bill_depth_mm" "flipper_length_mm" et "body_mass_g" --&gt;
+
+&lt;!-- names_to : Ces 4 colonnes vont devenir 3 colonnes appelées « part », measure et unit.  --&gt;
+
+&lt;!-- values_to : Les valeurs des variables vont aussi se voir donner une colonne, appelé « valeur ».  --&gt;
+
+&lt;!-- names_sep : Si names_to contient plusieurs valeurs, cet argument contrôle la manière dont le nom de la colonne est découpé. --&gt;
 
 
 
 ---
-class: center, bottom, inverse
+class: class: top
+
+### pivot_longer
+
+<div id="htmlwidget-2fb928c067c613846622" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2fb928c067c613846622">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],[1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5],["male","male","male","male","female","female","female","female","female","female","female","female",null,null,null,null,"female","female","female","female"],[2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007],["bill","bill","flipper","body","bill","bill","flipper","body","bill","bill","flipper","body","bill","bill","flipper","body","bill","bill","flipper","body"],["length","depth","length","mass","length","depth","length","mass","length","depth","length","mass","length","depth","length","mass","length","depth","length","mass"],["mm","mm","mm","g","mm","mm","mm","g","mm","mm","mm","g","mm","mm","mm","g","mm","mm","mm","g"],[39.1,18.7,181,3750,39.5,17.4,186,3800,40.3,18,195,3250,null,null,null,null,36.7,19.3,193,3450]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>species<\/th>\n      <th>island<\/th>\n      <th>studygroupid<\/th>\n      <th>sex<\/th>\n      <th>year<\/th>\n      <th>part<\/th>\n      <th>measure<\/th>\n      <th>unit<\/th>\n      <th>valeur<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[3,5,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 
-  
-  
+&lt;!-- Une démarche alternative (que vous allez assurément retrouver même si la fonction est aujourd'hui obsolète) est d'utiliser « gather ». La synthaxe est différente, mais le résultat est le même. --&gt;
+
+&lt;!-- key remplace names_to // value remplace values_to --&gt;
+
 ---
-class: inverse, middle, center
+Class: top
 
-# Using xaringan
+# pivot_wider()
+
+&amp;nbsp;
+&amp;nbsp;
+
+pivot_wider() est la transformation inverse de pivot_longer(). 
+
+Cette fonction "élargit" les données, en augmentant le nombre de colonnes et en diminuant le nombre de lignes.
+
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+&lt;!-- Ici, les valeurs explicitées dans « part », « measure » et « unit » utilisent des rangées (rows), alors que ces deux variables devraient être des colonnes. On veut changer ces rangées en colonnes, retourner à notre dataframe initial.   --&gt;
+
+&lt;!-- La synthaxe est sensiblement similaire qu'avec pivot_longer(), mais names_from remplace names_to et values_from remplace values_to.  --&gt;
+
+
+
+```r
+penguins_wide &lt;- penguins_long %&gt;% 
+  pivot_wider(names_from = c("part", "measure", "unit"), # faire pivoter ces colonnes
+                     values_from = "valeur", # prendre les valeurs des observations ici
+                     names_sep = "_") # combine col names using an underscore
+```
+
+&lt;!-- Avant pivot_wider(), la fonction spread() exécutait sensiblement la même fonction.  --&gt;
+---
+class: top
+
+# pivot_wider()
+
+<div id="htmlwidget-145886a683628d1ee420" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-145886a683628d1ee420">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],["male","female","female",null,"female","male","female","male",null,null,null,null,"female","male","male","female","female","male","female","male"],[2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>species<\/th>\n      <th>island<\/th>\n      <th>studygroupid<\/th>\n      <th>sex<\/th>\n      <th>year<\/th>\n      <th>bill_length_mm<\/th>\n      <th>bill_depth_mm<\/th>\n      <th>flipper_length_mm<\/th>\n      <th>body_mass_g<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[3,5,6,7,8,9]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+---
+class: top
+
+# La fonction **separate()**
+
+Avec une expression régulière ou un vecteur de caractères, **separate()** transforme une colonne de caractères unique en plusieurs colonnes.
+
+&amp;nbsp;
+&amp;nbsp;
+
+
+
+&lt;!-- Un autre problème auquel la fonction tidyr s'attaque est la situation dans laquelle on veut décomposer une variable en plusieurs variables distinctes. C'est ce à quoi la fonction separate() sert.  --&gt;
+
+
+```r
+df_raw &lt;- palmerpenguins::penguins_raw
+```
+
+&amp;nbsp;
+&amp;nbsp;
+
+
+```r
+df_separate &lt;- df_raw %&gt;%
+  separate(Stage, into = c("Stage", "Egg stage"), sep = ",", convert = TRUE)
+```
 
 ---
 
+# La fonction separate()
+<div id="htmlwidget-dff33edb0f10aa366e94" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dff33edb0f10aa366e94">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],["Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)"],["Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],["Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult","Adult"],[" 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"," 1 Egg Stage"],["N1A1","N1A2","N2A1","N2A2","N3A1","N3A2","N4A1","N4A2","N5A1","N5A2","N6A1","N6A2","N7A1","N7A2","N8A1","N8A2","N9A1","N9A2","N10A1","N10A2"],["Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes"],["2007-11-11","2007-11-11","2007-11-16","2007-11-16","2007-11-16","2007-11-16","2007-11-15","2007-11-15","2007-11-09","2007-11-09","2007-11-09","2007-11-09","2007-11-15","2007-11-15","2007-11-16","2007-11-16","2007-11-12","2007-11-12","2007-11-16","2007-11-16"],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["MALE","FEMALE","FEMALE",null,"FEMALE","MALE","FEMALE","MALE",null,null,null,null,"FEMALE","MALE","MALE","FEMALE","FEMALE","MALE","FEMALE","MALE"],[null,8.94956,8.36821,null,8.76651,8.66496,9.18718,9.4606,null,9.13362,8.63243,null,null,null,8.55583,null,9.18528,8.67538,8.47827,9.11616],[null,-24.69454,-25.33302,null,-25.32426,-25.29805,-25.21799,-24.89958,null,-25.09368,-25.21315,null,null,null,-25.22588,null,-25.06691,-25.13993,-25.23319,-24.77227],["Not enough blood for isotopes.",null,null,"Adult not sampled.",null,null,"Nest never observed with full clutch.","Nest never observed with full clutch.","No blood sample obtained.","No blood sample obtained for sexing.","No blood sample obtained for sexing.","No blood sample obtained.","Not enough blood for isotopes.","Not enough blood for isotopes.",null,"Not enough blood for isotopes.",null,null,null,null]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>studyName<\/th>\n      <th>Sample Number<\/th>\n      <th>Species<\/th>\n      <th>Region<\/th>\n      <th>Island<\/th>\n      <th>Stage<\/th>\n      <th>Egg stage<\/th>\n      <th>Individual ID<\/th>\n      <th>Clutch Completion<\/th>\n      <th>Date Egg<\/th>\n      <th>Culmen Length (mm)<\/th>\n      <th>Culmen Depth (mm)<\/th>\n      <th>Flipper Length (mm)<\/th>\n      <th>Body Mass (g)<\/th>\n      <th>Sex<\/th>\n      <th>Delta 15 N (o/oo)<\/th>\n      <th>Delta 13 C (o/oo)<\/th>\n      <th>Comments<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,11,12,13,14,16,17]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+ 
+&lt;!-- Nous séparons la variable "Stage" en deux nouvelles variables : "Stage", et "egg stage".  Nous spécifions, via l'argument "sep", que la virgule divise les deux variables.   --&gt;
+
+
+&lt;!-- Le dernier élément, "convert = TRUE", est nécessaire puisqu'initialement la variable « Stage » était de classe « character ». En spécifiant "convert = TRUE", on demande à R de rechercher le type de variable le mieux adapté à la nouvelle variable. --&gt;
+
+---
+
+# La fonction **unite()**
+
+Une fonction pratique permettant de coller plusieurs colonnes en une seule.
+
+
+Nous voulons condenser les variables "century" et "year" en une seule variable appelée "new" : 
+
+
+```r
+df_unite &lt;- df_raw %&gt;%
+  unite(lieu, Island, Region)
+
+tibble(head(df_unite$lieu))
+```
+
+```
+## # A tibble: 6 × 1
+##   `head(df_unite$lieu)`
+##   &lt;chr&gt;                
+## 1 Torgersen_Anvers     
+## 2 Torgersen_Anvers     
+## 3 Torgersen_Anvers     
+## 4 Torgersen_Anvers     
+## 5 Torgersen_Anvers     
+## 6 Torgersen_Anvers
+```
+
+---
+
+# La fonction **unite()**
+
+Nous pouvons faire mieux. 
+&lt;!-- la valeur par défaut ici est sep = "_", alors forçons l'absence de séparateur de caractères.  Il arrive parfois que nous voulions faire des visualisations ou des modèles basés sur des composantes comme ces informations, alors gardons-les dans le jeu de données. Nous pouvons le faire en spécifiant "remove = FALSE" à la fonction.
+
+&lt;!-- La variable rate représente un « merge » des variables « cases » et « population ».  --&gt;
+
+
+```r
+df_unite &lt;- df_raw %&gt;%
+  unite(lieu, Island, Region, sep = "", remove = FALSE)
+
+tibble(head(df_unite$lieu))
+```
+
+```
+## # A tibble: 6 × 1
+##   `head(df_unite$lieu)`
+##   &lt;chr&gt;                
+## 1 TorgersenAnvers      
+## 2 TorgersenAnvers      
+## 3 TorgersenAnvers      
+## 4 TorgersenAnvers      
+## 5 TorgersenAnvers      
+## 6 TorgersenAnvers
+```
+
+
+---
+class: top, center
+
+# La fonction **fill()**
+
+Pour les valeurs explicitement manquantes, nous pouvons utiliser la fonction `fill()` de tidyr. Avec cette fonction, nous pouvons notamment remplir automatiquement une observation manquante à partir de la ligne précédente ou suivante.
+
+
+<div id="htmlwidget-b7f4e332bf539d67c632" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b7f4e332bf539d67c632">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["male","female","female",null,"female","male","female","male",null,null,null,null,"female","male","male","female","female","male","female","male"],[2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>species<\/th>\n      <th>island<\/th>\n      <th>bill_length_mm<\/th>\n      <th>bill_depth_mm<\/th>\n      <th>flipper_length_mm<\/th>\n      <th>body_mass_g<\/th>\n      <th>sex<\/th>\n      <th>year<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,8]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+---
+# La fonction **fill()**
+
+
+
+```r
+df_fill &lt;- df %&gt;%
+  fill(bill_length_mm, .direction = "up")
+```
+
+---
+# La fonction **fill()**
+
+
+<div id="htmlwidget-0109d42d015cca373569" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0109d42d015cca373569">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],[39.1,39.5,40.3,36.7,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["male","female","female",null,"female","male","female","male",null,null,null,null,"female","male","male","female","female","male","female","male"],[2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>species<\/th>\n      <th>island<\/th>\n      <th>bill_length_mm<\/th>\n      <th>bill_depth_mm<\/th>\n      <th>flipper_length_mm<\/th>\n      <th>body_mass_g<\/th>\n      <th>sex<\/th>\n      <th>year<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,8]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+
+---
+# La fonction **complete()**
+
+
+Pour des données implicitement manquantes, nous pouvons utiliser la fonction `complete()`.
+
+
+<div id="htmlwidget-6c16b91cc1b28cdc66dd" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6c16b91cc1b28cdc66dd">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708","PAL0708"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],["Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)","Adelie Penguin (Pygoscelis adeliae)"],["Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers","Anvers"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],["Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage","Adult, 1 Egg Stage"],["N1A1","N1A2","N2A1","N2A2","N3A1","N3A2","N4A1","N4A2","N5A1","N5A2","N6A1","N6A2","N7A1","N7A2","N8A1","N8A2","N9A1","N9A2","N10A1","N10A2"],["Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes"],["2007-11-11","2007-11-11","2007-11-16","2007-11-16","2007-11-16","2007-11-16","2007-11-15","2007-11-15","2007-11-09","2007-11-09","2007-11-09","2007-11-09","2007-11-15","2007-11-15","2007-11-16","2007-11-16","2007-11-12","2007-11-12","2007-11-16","2007-11-16"],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["MALE","FEMALE","FEMALE",null,"FEMALE","MALE","FEMALE","MALE",null,null,null,null,"FEMALE","MALE","MALE","FEMALE","FEMALE","MALE","FEMALE","MALE"],[null,8.94956,8.36821,null,8.76651,8.66496,9.18718,9.4606,null,9.13362,8.63243,null,null,null,8.55583,null,9.18528,8.67538,8.47827,9.11616],[null,-24.69454,-25.33302,null,-25.32426,-25.29805,-25.21799,-24.89958,null,-25.09368,-25.21315,null,null,null,-25.22588,null,-25.06691,-25.13993,-25.23319,-24.77227],["Not enough blood for isotopes.",null,null,"Adult not sampled.",null,null,"Nest never observed with full clutch.","Nest never observed with full clutch.","No blood sample obtained.","No blood sample obtained for sexing.","No blood sample obtained for sexing.","No blood sample obtained.","Not enough blood for isotopes.","Not enough blood for isotopes.",null,"Not enough blood for isotopes.",null,null,null,null]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>studyName<\/th>\n      <th>Sample Number<\/th>\n      <th>Species<\/th>\n      <th>Region<\/th>\n      <th>Island<\/th>\n      <th>Stage<\/th>\n      <th>Individual ID<\/th>\n      <th>Clutch Completion<\/th>\n      <th>Date Egg<\/th>\n      <th>Culmen Length (mm)<\/th>\n      <th>Culmen Depth (mm)<\/th>\n      <th>Flipper Length (mm)<\/th>\n      <th>Body Mass (g)<\/th>\n      <th>Sex<\/th>\n      <th>Delta 15 N (o/oo)<\/th>\n      <th>Delta 13 C (o/oo)<\/th>\n      <th>Comments<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,10,11,12,13,15,16]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+---
+# La fonction **complete()**
+
+
+
+```r
+df_complete &lt;- df_raw %&gt;%
+  complete(`Sample Number`, Species)
+```
+
+---
+# La fonction **complete()**
+
+
+<div id="htmlwidget-cf86bed9a316b454ad1d" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-cf86bed9a316b454ad1d">{"x":{"filter":"none","vertical":false,"fillContainer":true,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"],["Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie","Adelie"],["Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen","Torgersen"],[39.1,39.5,40.3,null,36.7,39.3,38.9,39.2,34.1,42,37.8,37.8,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46],[18.7,17.4,18,null,19.3,20.6,17.8,19.6,18.1,20.2,17.1,17.3,17.6,21.2,21.1,17.8,19,20.7,18.4,21.5],[181,186,195,null,193,190,181,195,193,190,186,180,182,191,198,185,195,197,184,194],[3750,3800,3250,null,3450,3650,3625,4675,3475,4250,3300,3700,3200,3800,4400,3700,3450,4500,3325,4200],["male","female","female",null,"female","male","female","male",null,null,null,null,"female","male","male","female","female","male","female","male"],[2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007,2007]],"container":"<table class=\"display fill-container\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>species<\/th>\n      <th>island<\/th>\n      <th>bill_length_mm<\/th>\n      <th>bill_depth_mm<\/th>\n      <th>flipper_length_mm<\/th>\n      <th>body_mass_g<\/th>\n      <th>sex<\/th>\n      <th>year<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[3,4,5,6,8]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+
+&lt;!-- Celle-ci remplira la variable "yield" avec des NA pour chaque combinaison unique de "year" et "qtr" - rendant ainsi explicites les données implicitement manquantes. --&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
