@@ -349,6 +349,7 @@ pack(), unpack(), expand(), anti_join(), right_join(), chop(), etc.
 <!-- Nesting : convertit les données groupées en une forme où chaque groupe devient une seule rangée contenant un data frame imbriqué.-->
 
 --
+
 &nbsp;
 
 
@@ -647,7 +648,7 @@ DT::datatable(
 
 - expand_grid()
 
-- separate_Rows()
+- separate_rows()
 <!-- Si une variable contient des observations avec plusieurs valeurs délimitées, cela sépare les valeurs et place chacune d'elles dans sa propre ligne. -->
 
 
