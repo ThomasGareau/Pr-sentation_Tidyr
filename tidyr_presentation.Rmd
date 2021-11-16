@@ -26,7 +26,6 @@ background-position: top
 # tidyr, c'est quoi?
 
 
-
 "*tidy datasets are all alike, but every messy dataset is messy in its own way*" 
 
 Hadley Wickham 
@@ -329,7 +328,7 @@ DT::datatable(
 <!-- Loin de moi l'idée de remplacer une cheat sheet. On va donc regarder les fonctions qui sont le plus utilisées avec les arguments qui vont seront le plus utiles.  -->
 
 
-Le “Pivotting”
+**Le “Pivotting”**
 pivot_longer() / pivot_wider()
 
 <!-- Ce sont des fonctions qui permettent la transformation de la forme d'un data frame, de long à large ou de large à long  -->
@@ -339,7 +338,7 @@ pivot_longer() / pivot_wider()
 &nbsp;
 
 
-Le “Rectangling” et le "Nesting" 
+**Le “Rectangling” et le "Nesting"**
 pack(), unpack(), expand(), anti_join(), right_join(), chop(), etc.
 
 <!-- Ce sont des familles de fonction qui vous permettent de reformater des data frames « imbriqués » (nested) -->
@@ -353,8 +352,7 @@ pack(), unpack(), expand(), anti_join(), right_join(), chop(), etc.
 &nbsp;
 
 
-Les fonctions de « fractionnement et de combinaison de caractères »
-
+**Les fonctions de « fractionnement et de combinaison de caractères »**
 separate(), extract(), unite(), etc. 
 
 
@@ -364,7 +362,7 @@ separate(), extract(), unite(), etc.
 
 &nbsp;
 
-Les fonctions touchant aux valeurs manquantes
+**Les fonctions touchant aux valeurs manquantes**
 complete(), drop_na(), fill(), replace_na, etc.
 
 <!-- valeurs manquantes implicites explicites avec complete(); rendre les valeurs manquantes explicites implicites avec drop_na(); remplacer les valeurs manquantes par la valeur suivante/précédente avec fill(), ou une valeur connue avec replace_na(). -->
@@ -648,6 +646,10 @@ DT::datatable(
 - hoist()
 
 - expand_grid()
+
+- separate_Rows()
+<!-- Si une variable contient des observations avec plusieurs valeurs délimitées, cela sépare les valeurs et place chacune d'elles dans sa propre ligne. -->
+
 
 - chop()
 
