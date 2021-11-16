@@ -84,6 +84,8 @@ Plus de détails sur cette base de données [ici](https://allisonhorst.github.io
 &nbsp;
 
 
+<!-- Sachez qu'à même le package, il existe toutefois des data frames nommées table1, 2, 3, 4, etc. Ceux-ci ont été conûs avec les défauts, le « untidyness », auxquel tidyr permet de palier.  -->
+
 ---
 class: inverse, middle, center
 
@@ -322,36 +324,47 @@ DT::datatable(
 
 # 2.1 Les 4 familles de fonctions dans tidyr selon l'action entreprise
 
+&nbsp;
 
 <!-- Loin de moi l'idée de remplacer une cheat sheet. On va donc regarder les fonctions qui sont le plus utilisées avec les arguments qui vont seront le plus utiles.  -->
 
 
-- Le “Pivotting”
+Le “Pivotting”
 pivot_longer() / pivot_wider()
 
 <!-- Ce sont des fonctions qui permettent la transformation de la forme d'un data frame, de long à large ou de large à long  -->
 
 --
 
+&nbsp;
 
-- Le “Rectangling” et le "Nesting" 
-Ce sont des familles de fonction qui vous permettent de reformater des data frames « imbriqués » (nested)
+
+Le “Rectangling” et le "Nesting" 
+pack(), unpack(), expand(), anti_join(), right_join(), chop(), etc.
+
+<!-- Ce sont des familles de fonction qui vous permettent de reformater des data frames « imbriqués » (nested) -->
+
 
 <!-- i.e. une (ou plusieurs) colonne(s) est une liste de data frames -->
 
 <!-- Nesting : convertit les données groupées en une forme où chaque groupe devient une seule rangée contenant un data frame imbriqué.-->
 
 --
+&nbsp;
 
-- Les fonctions de « fractionnement et de combinaison de caractères ». 
-separate(), extract(), unite, etc. 
+
+Les fonctions de « fractionnement et de combinaison de caractères »
+
+separate(), extract(), unite(), etc. 
 
 
 <!-- et celles qui y sont associées sont utiles pour transformer une colonne à caractère unique en plusieurs colonnes. La fonction unite() vous servira pour combiner plusieurs colonnes en une seule colonne de caractères. -->
 
 --
 
-- Les fonctions touchant aux valeurs manquantes.
+&nbsp;
+
+Les fonctions touchant aux valeurs manquantes
 complete(), drop_na(), fill(), replace_na, etc.
 
 <!-- valeurs manquantes implicites explicites avec complete(); rendre les valeurs manquantes explicites implicites avec drop_na(); remplacer les valeurs manquantes par la valeur suivante/précédente avec fill(), ou une valeur connue avec replace_na(). -->
@@ -364,7 +377,7 @@ complete(), drop_na(), fill(), replace_na, etc.
 class: top
 
 
-### pivot_longer()
+# **pivot_longer()**
 
 
 Ces données sont « tidy » dans la mesure où elles répondent aux conditions vues précédemment. On peut toutefois expérimenter avec celles-ci quand même : 
@@ -387,7 +400,7 @@ penguins_long <- penguins_id %>%
 
 4 arguments-clé :
 
-- cols
+- Contains
 
 --
 
@@ -414,7 +427,7 @@ penguins_long <- penguins_id %>%
 ---
 class: class: top
 
-### pivot_longer
+#  **pivot_longer()**
 
 ```{r eval=require('DT'), echo=FALSE}
 DT::datatable(
@@ -431,7 +444,7 @@ DT::datatable(
 ---
 Class: top
 
-# pivot_wider()
+# **pivot_wider()**
 
 &nbsp;
 &nbsp;
@@ -460,7 +473,7 @@ penguins_wide <- penguins_long %>%
 ---
 class: top
 
-# pivot_wider()
+# **pivot_wider()**
 
 ```{r eval=require('DT'), echo=FALSE}
 DT::datatable(
@@ -497,7 +510,7 @@ df_separate <- df_raw %>%
 
 ---
 
-# La fonction separate()
+# La fonction **separate()**
 ```{r eval=require('DT'), echo=FALSE}
 DT::datatable(
   head(df_separate, 20),
@@ -517,7 +530,7 @@ DT::datatable(
 Une fonction pratique permettant de coller plusieurs colonnes en une seule.
 
 
-Nous voulons condenser les variables "century" et "year" en une seule variable appelée "new" : 
+Nous voulons condenser les variables "Island" et "Region" en une seule variable appelée "lieu" : 
 
 ```{r unite exemple}
 df_unite <- df_raw %>%
@@ -531,9 +544,10 @@ tibble(head(df_unite$lieu))
 # La fonction **unite()**
 
 Nous pouvons faire mieux. 
-<!-- la valeur par défaut ici est sep = "_", alors forçons l'absence de séparateur de caractères.  Il arrive parfois que nous voulions faire des visualisations ou des modèles basés sur des composantes comme ces informations, alors gardons-les dans le jeu de données. Nous pouvons le faire en spécifiant "remove = FALSE" à la fonction.
 
-<!-- La variable rate représente un « merge » des variables « cases » et « population ».  -->
+<!-- la valeur par défaut ici est sep = "_", alors forçons l'absence de séparateur de caractères.  Il arrive parfois que nous voulions faire des visualisations ou des modèles basés sur des composantes comme ces informations, alors gardons-les dans le jeu de données. Nous pouvons le faire en spécifiant "remove = FALSE" à la fonction. -->
+
+<!-- La variable rate représente un « merge » des variables « cases » et « population ». -->
 
 ```{r}
 df_unite <- df_raw %>%
@@ -597,21 +611,75 @@ DT::datatable(
 ---
 # La fonction **complete()**
 
+<!-- Expliquer dans quel contexte se serait utile : 4 entrées pour 2016, 4 pour 2017, 4 pour 2018, mais seulement une entrée pour 2019.  -->
+
 
 ```{r}
 df_complete <- df_raw %>%
   complete(`Sample Number`, Species)
 ```
 
----
-# La fonction **complete()**
-
 
 ```{r eval=require('DT'), echo=FALSE}
 DT::datatable(
-  head(df, 20),
+  head(df_complete, 20),
   fillContainer = TRUE, options = list(pageLength = 8)
 )
 ```
 
 <!-- Celle-ci remplira la variable "yield" avec des NA pour chaque combinaison unique de "year" et "qtr" - rendant ainsi explicites les données implicitement manquantes. -->
+
+
+---
+
+# Et de multiples autres fonctions : 
+
+#... et de nombreuses autres fonctions :
+
+- replace_na()
+<!-- qui remplace les NA par les valeurs spécifiées -->
+
+- pack()
+
+- unpack()
+
+- uncount()
+
+- hoist()
+
+- expand_grid()
+
+- chop()
+
+<!-- Les fonctions chop() et unchop() préservent la largeur d'un cadre de données et en modifient la longueur. chop() raccourcit un df en convertissant les lignes de chaque groupe en colonnes de liste.. -->
+
+
+
+
+
+---
+
+
+# Merci!
+
+[cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+![unchanged image](https://education.rstudio.com/blog/2020/07/palmerpenguins-cran/gorman-penguins.jpg)
+
+
+---
+# Sources
+
+McNulty, Keith. 2020. «*Ten Up-to-Date Ways to Do Common Data Tasks in R*». Medium. 1 septembre 2020. https://towardsdatascience.com/ten-up-to-date-ways-to-do-common-data-tasks-in-r-4f15e56c92d.
+
+« *Teaching the Tidyverse in 2020 - Part 3: Data Wrangling and Tidying* ». s.d. Consulté le 16 novembre 2021. https://education.rstudio.com/blog/2020/07/teaching-the-tidyverse-in-2020-part-3-data-wrangling-and-tidying/.
+
+« *R for Data Science* ». 2020. Consulté le 16 novembre 2021. https://r4ds.had.co.nz/.
+
+« *Tidy Messy Data* ». s.d. Consulté le 16 novembre 2021. https://tidyr.tidyverse.org/.
+
+UC Business Analytics R Programming Guide. s.d. « *Reshaping Your Data with tidyr · UC Business Analytics R Programming Guide* ». Consulté le 16 novembre 2021. https://uc-r.github.io/tidyr.
+
+
+
+
