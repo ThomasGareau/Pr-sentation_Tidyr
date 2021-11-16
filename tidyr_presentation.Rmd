@@ -202,7 +202,7 @@ Ces règles étant **inter-reliées**, elles peuvent être résumées en deux co
 .footnote[[*] source : Wickham et Grolemund 2016, 149]
 
 ---
-class: top
+class: top, middle
 
 
 ![OMD, that smile...](https://education.rstudio.com/blog/2020/07/teaching-the-tidyverse-in-2020-part-3-data-wrangling-and-tidying/img/tidyr-longer-wider.gif)
@@ -215,7 +215,7 @@ class: inverse, top
 ## 1.2 Avantages du « Tidying »
 
 .pull-left[
-- Des données suivant une consistante permettent de développer les outils qui vous rendront plus efficaces;
+- Des données suivant une certaine constance permettent de développer les outils qui vous rendront plus efficaces;
 
 - Placer les variables dans les colonnes permet à la nature vectorielle de R d'utiliser son plein potentiel;
 
