@@ -1,0 +1,847 @@
+---
+title: "tidyr : la lada des packages"
+subtitle: "Présentation orale - FAS 1002"
+author: "Thomas Gareau Paquette"
+institute: "Université de Montréal"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, middle, center
+background-image: url(https://tidyr.tidyverse.org/logo.png)
+background-size: 120px 120 px
+background-position: top
+
+\
+&nbsp;
+\
+&nbsp;
+
+# tidyr, c'est quoi?
+
+```{r echo=false}
+library(tidyverse)
+```
+
+
+"*tidy datasets are all alike, but every messy dataset is messy in its own way*" 
+
+Hadley Wickham 
+<!-- c'est la promesse de plus de temps consacré à l'analyse -->
+
+---
+class: inverse, middle
+
+# Prologue 
+
+### Prononciation : le débat
+
+#### / ˈtaɪdi ɑː / ?
+
+Les experts ne s'entendent pas quant à la façon dont l'usager doit prononcer le néologisme « tidyr » :
+
+![unchanged image](tidyr-poll.png)
+
+<!-- Aussi, « tidyr » ne prend jamais de majuscule -->
+
+---
+class: inverse, top
+
+# Prologue (suite)
+
+### Les données que nous manipulerons
+
+<!-- Je vous propose de découvrir le package en utilisant ses fonctions pour nettoyer une vraie base de données. -->
+
+
+Les données que nous manipulerons proviennent du package **palmerpenguins** :
+
+
+```{r}
+df <- palmerpenguins::penguins
+```
+
+```{r}
+#install.packages("palmerpenguins")
+df_raw <- palmerpenguins::penguins_raw
+```
+
+
+
+```{r}
+penguins_madeup_wide <- tribble(
+  ~name,        ~sex,     ~tap_dance, ~body_mass_1, ~body_mass_2, ~body_mass_3, 
+  "Mumble",     "male",   TRUE,       4801,         5699,         5743,         
+  "Gloria",     "female", FALSE,      4785,         3092,         4220,         
+  "Memphis",    "male",   FALSE,      3349,         4186,         4454,         
+  "Norma Jean", "female", FALSE,      4235,         3220,         4019        
+)
+
+penguins_madeup_wide
+```
+
+```{r}
+penguins_madeup_long <- penguins_madeup_wide %>%
+  pivot_longer(
+    cols = starts_with("body_mass"),
+    names_to = "measurement",
+    names_prefix = "body_mass_",
+    values_to = "body_mass"
+  )
+
+penguins_madeup_long
+```
+
+![OMD, that smile...](https://education.rstudio.com/blog/2020/07/teaching-the-tidyverse-in-2020-part-3-data-wrangling-and-tidying/img/tidyr-longer-wider.gif){loop=""}
+
+
+
+```{r}
+penguins_madeup_long <- penguins_madeup_wide %>%
+  pivot_longer(
+    cols = starts_with("body_mass"),
+    names_to = "measurement",
+    names_prefix = "body_mass_",
+    values_to = "body_mass"
+  )
+
+penguins_madeup_long
+```
+
+
+```{r }
+df <- palmerpenguins::penguins
+```
+
+--
+
+Puisque cette présentation porte sur tidyr, nous utiliserons les données brutes histoire de les « nettoyer ». 
+
+--
+
+Plus de détails sur cette base de données [ici](https://allisonhorst.github.io/palmerpenguins/) 
+
+
+---
+class: inverse, middle, center
+
+![unchanged image](https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png)
+
+
+---
+background-image: url(https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png)
+background-position: 50% 50%
+class: inverse
+
+#  <span style="color:red">1. À quoi sert Tidyr ?</span>.
+ 
+
+---
+class: inverse, top
+
+# 1. À quoi sert Tidyr ?
+
+<!-- Avant de plonger dans tidyr, il faut comprendre ce que sont des données formatées « tidy ».  -->
+
+Le but de tidyr est de vous aider à créer des données « *tidy* ». 
+
+Le *Tidy data* décrit une méthode standard de classement des données qui est utilisée (dans la mesure du possible) dans l'ensemble de tidyverse. 
+
+
+Si vous vous assurez que vos données correspondent au standard « tidy data », vous passerez moins de temps à vous battre avec les outils et plus de temps à travailler sur votre analyse. 
+
+---
+class: inverse, top
+
+## 1.1 Fondements théoriques
+
+
+Le « *data tidying* » est une façon cohérente d'organiser vos données dans R.
+
+
+Trois règles inter-reliées permettent d'affirmer qu'un jeu de données est "*Tidy*" :
+
+--
+
+
+- Chaque variable a sa propre colonne;
+
+--
+
+
+- Chaque observation a sa propre rangée;
+
+--
+
+
+- Chaque valeur a sa propre cellule.
+
+
+---
+class: inverse, top
+
+## 1.1 Fondements théoriques
+
+
+Ces règles étant **inter-reliées**, ces règles pourraient être résumées en deux commandements : 
+
+
+--
+
+- Chaque jeu de données doit avoir son *tibble*
+
+
+
+--
+- Chaque variable doit être avoir sa colonne. 
+
+
+--
+
+<!-- L'adage veut que 80% de l'analyse des données soit consacrée au nettoyage et à la préparation des données. -->
+
+![unchanged image](https://garrettgman.github.io/images/tidy-1.png)
+
+.footnote[[*] source : Wickham et Grolemund 2016, 149]
+
+---
+class: top
+
+# Exemple
+```{r eval=require('DT')}
+DT::datatable(
+  head(df, 20),
+  fillContainer = TRUE, options = list(pageLength = 8)
+)
+```
+
+<!-- Ces données sont « tidy ».  -->
+
+---
+class: inverse, top
+
+## 1.2 Avantages du « Tidying »
+
+.pull-left[
+- Des données suivant une consistante permettent de développer les outils qui vous rendront plus efficaces;
+
+- Placer les variables dans les colonnes permet à la nature vectorielle de R d'utiliser son plein potentiel;
+
+- Des packages du *tidyverse* comme dplyr et ggplot2 sont conçus pour fonctionner avec des « *tidy data* »;
+
+
+- Votre tranquilité d'esprit.
+]
+
+--
+.pull-right[
+![unchanged image](https://cdn.shopify.com/s/files/1/2975/7656/files/netflix-hero_600x.jpg?v=1545247760)
+]
+
+---
+class: inverse, top
+
+# 1.3 Prérequis
+
+### tidyr appartient au « *core* » de tidyverse : 
+
+Un seul prérequis :
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+<!-- Inclut dyplr, ggplot, et de nombreux autres packages formidables -->
+
+```{r message=FALSE, echo=FALSE}
+library(kableExtra)
+```
+
+
+Si vous êtes un « *contrarian* », vous pouvez aussi directement installer **tidyr** : 
+
+```{r }
+#library(tidyr)
+```
+
+
+---
+background-image: url(https://allisonhorst.github.io/palmerpenguins/man/figures/lter_penguins.png)
+background-position: 0% 0%
+
+#  <span style="color:red">2. Fonctions principales </span>
+
+
+&nbsp;
+
+&nbsp;
+
+### « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »
+
+
+
+---
+class: top,
+
+Voici notre banque de donnée avant le "tidying" :
+
+
+--
+```{r eval=require('DT')}
+DT::datatable(
+  head(df_raw, 20),
+  fillContainer = TRUE, options = list(pageLength = 8)
+)
+```
+
+<!-- Beaucoup de bases de données ne sont pas explicitement conçues pour l'analyse, d'où la nécéssité de les « tidy » -->
+
+
+
+---
+
+# Les 5 fonctions principales de tidyr
+
+- “Pivotting” which converts between long and wide forms. tidyr 1.0.0 introduces pivot_longer() and pivot_wider(), replacing the older spread() and gather() functions. See vignette("pivot") for more details.
+
+
+- “Rectangling”, which turns deeply nested lists (as from JSON) into tidy tibbles. See unnest_longer(), unnest_wider(), hoist(), and vignette("rectangle") for more details.
+
+- Nesting converts grouped data to a form where each group becomes a single row containing a nested data frame, and unnesting does the opposite. See nest(), unnest(), and vignette("nest") for more details.
+
+- Splitting and combining character columns. Use separate() and extract() to pull a single character column into multiple columns; use unite() to combine multiple columns into a single character column.
+
+- Make implicit missing values explicit with complete(); make explicit missing values implicit with drop_na(); replace missing values with next/previous value with fill(), or a known value with replace_na().
+
+-Explicitly, i.e. flagged with NA.
+- Implicitly, i.e. simply not present in the data.
+
+
+---
+class: top
+
+# Les fonctions « clés » que nous allons découvrir
+
+1) pivot_longer()
+2) pivot_wider()
+3) separate()
+4) unite()
+5) fill()
+6) complete()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+class: top
+
+
+# 2.1 *Spreading* et *Gathering* --> retired. 
+
+## Première étape
+
+<!-- « the principles of tidy data seem so obivous that you might wonder if you'll ever encounter a dataset that isn't tidy. »  -->
+
+Quelles sont les observations et les variables?
+
+```{r}
+colnames(df_raw)
+head(rownames(df_raw))
+```
+
+---
+class: top
+
+## Deuxième étape
+
+Il nous faut résoudre les deux problèmes les plus communs : 
+
+
+--
+
+- Une variable se trouve-t-elle sur plusieurs colonnes?
+
+--
+
+- Une observation se trouve-t-elle sur plusieurs rangées? 
+
+De notre côté, dans les deux cas la réponse est « non ».
+--
+
+
+
+---
+class: center, bottom, inverse
+
+## La fonction *gather()*
+
+Development on gather() is complete, and for new code we recommend switching to pivot_longer(), which is easier to use, more featureful, and still under active development. df %>% gather("key", "value", x, y, z) is equivalent to df %>% pivot_longer(c(x, y, z), names_to = "key", values_to = "value")
+
+```{r}
+gather(
+  data,
+  key = "key",
+  value = "value",
+  ...,
+  na.rm = FALSE,
+  convert = FALSE,
+  factor_key = FALSE
+)
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *pivot_wider()*
+
+pivot_wider() "widens" data, increasing the number of columns and decreasing the number of rows. The inverse transformation is pivot_longer().
+
+
+```{r}
+pivot_wider(
+  data,
+  id_cols = NULL,
+  names_from = name,
+  names_prefix = "",
+  names_sep = "_",
+  names_glue = NULL,
+  names_sort = FALSE,
+  names_repair = "check_unique",
+  values_from = value,
+  values_fill = NULL,
+  values_fn = NULL,
+  ...
+)
+```
+
+
+
+The penguins dataset is clearly in a wide form — it gives multiple observations across the columns. For many reasons we may want to transform data from wide to long. In long data, each observation has its own row. The older function gather() in tidyr was popular for this sort of task but its new version pivot_longer() is even more powerful. In this case we have different body parts, measures and units inside these column names, but we can break them out very simply like this:
+
+Source : https://towardsdatascience.com/ten-up-to-date-ways-to-do-common-data-tasks-in-r-4f15e56c92d
+
+
+```{r}
+penguins_long <- df %>% 
+  tidyr::pivot_longer(contains("_"), # break out the measurement cols
+                      names_to = c("part", "measure", "unit"), # break them into these three columns
+                      names_sep = "_") #  use the underscore to separate
+
+View(penguins_long)
+```
+
+It’s just as easy to move back from long to wide. pivot_wider() gives much more flexibility compared to the older spread():
+
+
+```{r}
+
+penguins_wide <- penguins_long %>% 
+  tidyr::pivot_wider(names_from = c("part", "measure", "unit"), # pivot these columns
+                     values_from = "value", # take the values from here
+                     names_sep = "_") # combine col names using an underscore
+```
+
+---
+class: inverse, middle, center
+
+# La fonction *spread()*
+
+Development on spread() is complete, and for new code we recommend switching to pivot_wider(), which is easier to use, more featureful, and still under active development. df %>% spread(key, value) is equivalent to df %>% pivot_wider(names_from = key, values_from = value)
+
+```{r}
+spread(data, key, value, fill = NA, convert = FALSE, drop = TRUE, sep = NULL)
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *separate()*
+
+Given either a regular expression or a vector of character positions, separate() turns a single character column into multiple columns.
+
+
+```{r}
+separate(
+  data,
+  col,
+  into,
+  sep = "[^[:alnum:]]+",
+  remove = TRUE,
+  convert = FALSE,
+  extra = "warn",
+  fill = "warn",
+  ...
+)
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *separate_rows()*
+
+If a variable contains observations with multiple delimited values, this separates the values and places each one in its own row.
+
+
+---
+class: inverse, middle, center
+
+# La fonction *unite()*
+
+Convenience function to paste together multiple columns into one.
+
+```{r}
+unite(data, col, ..., sep = "_", remove = TRUE, na.rm = FALSE)
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *complete()*
+
+Turns implicit missing values into explicit missing values. This is a wrapper around expand(), dplyr::left_join() and replace_na() that's useful for completing missing combinations of data.
+
+```{r}
+complete(data, ..., fill = list())
+```
+
+
+For implicitly missing data, we can use the `complete()` function.  This will fill in the "yield" variable with NAs for every unique combination of "year" and "qtr" - thus making the implicitly missing data explicit.
+
+```{r complete example}
+stocks %>%
+  complete(year, qtr)
+```
+
+---
+class: inverse, middle, center
+
+# La fonction *full_seq()*
+
+This is useful if you want to fill in missing values that should have been observed but weren't. For example, full_seq(c(1, 2, 4, 6), 1) will return 1:6.
+
+
+```{r}
+full_seq(x, period, tol = 1e-06)
+```
+
+---
+class: inverse, middle, center
+
+# La fonction *extract()* et *extract_numeric()*
+
+Given a regular expression with capturing groups, extract() turns each group into a new column. If the groups don't match, or the input is NA, the output will be NA.
+
+```{r}
+extract(
+  data,
+  col,
+  into,
+  regex = "([[:alnum:]]+)",
+  remove = TRUE,
+  convert = FALSE,
+  ...
+)
+```
+
+
+---
+class: inverse, middle, center
+
+# La fonction *drop_na()*
+
+Drop rows containing missing values
+
+```{r}
+drop_na(data, ...)
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *chop()*
+
+Chopping and unchopping preserve the width of a data frame, changing its length. chop() makes df shorter by converting rows within each group into list-columns. unchop() makes df longer by expanding list-columns so that each element of the list-column gets its own row in the output. chop() and unchop() are building blocks for more complicated functions (like unnest(), unnest_longer(), and unnest_wider()) and are generally more suitable for programming than interactive data analysis.
+
+```{r}
+chop(data, cols)
+unchop(data, cols, keep_empty = FALSE, ptype = NULL)
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *expand()*
+
+expand() generates all combination of variables found in a dataset. It is paired with nesting() and crossing() helpers. crossing() is a wrapper around expand_grid() that de-duplicates and sorts its inputs; nesting() is a helper that only finds combinations already present in the data.
+
+expand() is often useful in conjunction with joins:
+
+use it with right_join() to convert implicit missing values to explicit missing values (e.g., fill in gaps in your data frame).
+
+use it with anti_join() to figure out which combinations are missing (e.g., identify gaps in your data frame).
+
+
+```{r}
+expand(data, ..., .name_repair = "check_unique")
+crossing(..., .name_repair = "check_unique")
+nesting(..., .name_repair = "check_unique")
+```
+
+
+
+---
+class: inverse, middle, center
+
+# La fonction *uncount()*
+
+unite(data, col, ..., sep = "_", remove = TRUE, na.rm = FALSE)
+
+```{r}
+uncount(data, weights, .remove = TRUE, .id = NULL)
+```
+
+
+---
+class: inverse, middle, center
+
+#... et de nombreuses autres fonctions :
+
+- tidyr_tidy_select()
+
+- pack()
+
+- unpack()
+
+- hoist()
+
+- expand_grid()
+
+
+
+citation("palmerpenguins")
+
+---
+class: inverse, middle, center
+
+# La fonction *replace_na()*
+
+Remplace les NA par les valeurs spécifiées
+
+```{r}
+replace_na(data, replace, ...)
+```
+
+
+citation("palmerpenguins")
+
+---
+class: inverse, middle, center
+
+# La fonction *fill()*
+
+
+Fills missing values in selected columns using the next or previous entry. This is useful in the common output format where values are not repeated, and are only recorded when they change.
+
+
+There are technically two different missing values here.
+The yield for Q4 of 2015 is missing.  There is a NA there, so we refer to it as **explicitly missing**.
+However, we would expect to see a value for Q1 of 2016 here, but none exists.  Hence, this is **implicitly missing**.
+
+For the explicitly missing values, we can use tidyr's function `fill()`.   With this, we can do some things like automatically fill from the previous or next row.
+
+```{r fill example}
+stocks %>%
+  fill(yield, .direction = "up")
+```
+
+This filled in the 2015 Q4 yield number by looking one row down and filling UP.   We can specify "down", "downup", or "updown".
+Additionally, explicitly missing values can be programmatically imputed outside of tidyr, but missing data in general is a huge topic for a different day.
+
+
+---
+
+
+
+
+[cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+
+-----
+class : top
+
+# Utilisation de tidyr
+
+```{r table1}
+table1
+```
+
+4 variables individuelles. 
+
+
+```{r}
+table4a
+```
+
+<!-- Ici, la variable « année » a été divisée en deux : 1999 et 2000. Le problème est qu'il y a deux colonnes "1999" et "2000" - cependant, ce ne sont pas vraiment des variables. Ce sont des observations d'une variable : l'année.  -->
+<!-- Une variable, 2 colonnes. -->
+<!-- On a trop de colonnes. On veut plutôt plus de rangées -->
+
+<!-- Nous devons donc faire passer ce tableau de "large" (plus de colonnes) à "long" (moins de colonnes, plus de lignes). On va utiliser la fonction pivot_longer() dans cette situation.  -->
+
+<!-- La synthaxe est la suivante :  -->
+
+
+
+<!-- 3 arguments-clé :  -->
+
+<!-- cols : les colonnes concernées (1999 et 2000) -->
+
+<!-- names_to : Ces deux colonnes vont devenir une seule colonne appelée « year ».  -->
+
+<!-- values_to : Les valeurs des variables vont aussi se voir donner une colonne, appelé « case ».  -->
+
+<!-- On va ensuite « arrange » pas « country » et « year » (facultatif) #dplyr -->
+
+
+
+```{r pivot_longer example}
+# Current way
+table4a %>%
+  pivot_longer(cols = c(`1999`, `2000`), names_to = "year", values_to = "cases")
+```
+
+```{r pivot_longer example}
+# Current way
+table4a %>%
+  pivot_longer(cols = c(`1999`, `2000`), names_to = "year", values_to = "cases") %>%
+  arrange(country, year) #facultatif
+```
+
+<!-- Une démarche alternative (que vous allez assurément retrouver même si la fonction est aujourd'hui obsolète) est d'utiliser « gather ». La synthaxe est différente, mais le résultat est le même. -->
+
+<!-- key remplace names_to // value remplace values_to -->
+
+
+```{r gather example}
+# Old way
+table4a %>%
+  gather(`1999`, `2000`, key = "year", value = "cases") %>%
+  arrange(country, year)
+```
+
+
+---
+class: top
+
+# pivot_wider
+
+Le problème de table2 est opposé. 
+
+```{r}
+tidyr::table2
+```
+
+<!-- Ici : « cases » et « population » utilisent des rangées (rows), alors que ces deux variables devraient être des colonnes. On veut changer des rangées en colonnes   -->
+
+<!-- La synthaxe est sensiblement similaire, mais names_from remplace names_to et values_from remplace values_to.  -->
+
+```{r pivot_wider example}
+# Current way
+table2 %>%
+  pivot_wider(names_from = "type", values_from = "count")
+```
+
+<!-- Avant pivot_wider(), la fonction spread() exécutait sensiblement la même fonction.  -->
+
+```{r spread example}
+# Old way
+table2 %>%
+  spread(key = "type", value = "count")
+```
+
+
+
+---
+
+# Fonction separate()
+class: top
+
+<!-- Un autre problème auquel la fonction tidyr s'attaque est la situation dans laquelle on veut décomposer une variable en plusieurs variables distinctes. C'est ce à quoi la fonction separate() sert.  -->
+
+```{r}
+table3
+```
+
+<!-- La variable rate représente un « merge » des variables « cases » et « population ».  -->
+
+```{r separate example}
+table3 %>%
+  separate(rate, into = c("cases", "population"), sep = "/", convert = TRUE)
+```
+
+Nous séparons la variable "rate" en deux nouvelles variables : "cases", et "population".  Nous spécifions, via l'argument "sep", que le "/" divise les deux variables.   Le dernier élément, "convert = TRUE", est nécessaire puisqu'initialement la variable « rate » était de classe « character ». En spécifiant "convert = TRUE", on demande à R de rechercher le type de variable le mieux adapté à la nouvelle variable.
+
+
+
+---
+# La fonction unite()
+
+
+```{r table5}
+table5
+```
+
+Nous voulons condenser les variables "century" et "year" en une seule variable appelée "new".
+
+
+```{r unite example 1}
+table5 %>%
+  unite(new, century, year)
+```
+
+
+Cela semble un peu mieux.   Cependant, la valeur par défaut ici est sep = "_", alors forçons l'absence de séparateur de caractères.  Il arrive parfois que nous voulions faire des visualisations ou des modèles basés sur des composants comme "century" ou "year", alors gardons-les dans le jeu de données.   Nous pouvons le faire en spécifiant "remove = FALSE" à la fonction `unite()`.
+
+- On spécifie le séparateur et remove = FALSE (pour garder les variables initiales)
+
+```{r unite example 2}
+table5 %>%
+  unite(new, century, year, sep = "", remove = FALSE) %>%
+  mutate(new = as.integer(new)) #sinon class(new) == function
+```
